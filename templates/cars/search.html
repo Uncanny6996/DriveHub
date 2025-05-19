@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
-
 {% block title %} | Search Result {% endblock %}
 {% block content %}
 {% load humanize %}
 <!-- Banner start -->
-
 <div class="sub-banner overview-bgi">
     <div class="container breadcrumb-area">
         <div class="breadcrumb-areas">
@@ -54,7 +52,6 @@
                                       <option value="{{year}}">{{year}}</option>
                                     {% endfor %}
                                 </select>
-								
                             </div>
                         </div>
                     </div>
@@ -87,7 +84,6 @@
                                 </div>
                             </div>
                         </div>
-						<!-- Log on to codeastro.com for more projects -->
                         <div class="col-lg-3 col-md-6 col-sm-6 col-6">
                             <div class="form-group">
                                 <button class="btn btn-block button-theme btn-md">
@@ -106,11 +102,17 @@
 <!-- Featured car start -->
 <div class="featured-car content-area">
     <div class="container">
-        <!-- Main title -->
         <div class="main-title">
             <h1>Your Search <span>Result</span></h1>
-            <!-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> -->
         </div>
+
+        {% if message %}
+          <div class="alert alert-warning">{{ message }}</div>
+        {% endif %}
+
+        <h5>Found {{ cars|length }} car{{ cars|length|pluralize }}</h5>
+
+        {% if cars %}
         <div class="row">
           {% for car in cars %}
             <div class="col-lg-4 col-md-6">
@@ -121,16 +123,9 @@
                             <img class="d-block w-100" src="{{car.car_photo.url}}" alt="car" style="min-height: 262px; max-height: 262px;">
                             <div class="facilities-list clearfix">
                                 <ul>
-                                    <li>
-                                        <span><i class="flaticon-way"></i></span>{{car.miles | intcomma}} miles
-                                    </li>
-                                    <li>
-                                        <span><i class="flaticon-calendar-1"></i></span>{{car.year}}
-                                    </li>
-                                    <li>
-									
-                                        <span><i class="flaticon-manual-transmission"></i></span>{{car.transmission}}
-                                    </li>
+                                    <li><span><i class="flaticon-way"></i></span>{{car.miles | intcomma}} miles</li>
+                                    <li><span><i class="flaticon-calendar-1"></i></span>{{car.year}}</li>
+                                    <li><span><i class="flaticon-manual-transmission"></i></span>{{car.transmission}}</li>
                                 </ul>
                             </div>
                         </a>
@@ -142,54 +137,42 @@
                                             <i class="fa fa-expand"></i>
                                             <img class="hidden" src="{{car.car_photo.url}}">
                                         </a>
-                                        {% if car.car_photo_1 %}
-                                        <a href="{{car.car_photo_1.url}}" class="hidden">
-                                            <img class="hidden" src="{{car.car_photo_1.url}}">
-                                        </a>
-                                        {% endif %}
-                                        {% if car.car_photo_2 %}
-                                        <a href="{{car.car_photo_2.url}}" class="hidden">
-                                            <img class="hidden" src="{{car.car_photo_2.url}}">
-                                        </a>
-                                        {% endif %}
-                                        {% if car.car_photo_3 %}
-                                        <a href="{{car.car_photo_3.url}}" class="hidden">
-                                            <img class="hidden" src="{{car.car_photo_3.url}}">
-                                        </a>
-                                        {% endif %}
-                                        {% if car.car_photo_4 %}
-                                        <a href="{{car.car_photo_4.url}}" class="hidden">
-                                            <img class="hidden" src="{{car.car_photo_4.url}}">
-                                        </a>
-                                        {% endif %}
+                                        {% if car.car_photo_1 %}<a href="{{car.car_photo_1.url}}" class="hidden"><img class="hidden" src="{{car.car_photo_1.url}}"></a>{% endif %}
+                                        {% if car.car_photo_2 %}<a href="{{car.car_photo_2.url}}" class="hidden"><img class="hidden" src="{{car.car_photo_2.url}}"></a>{% endif %}
+                                        {% if car.car_photo_3 %}<a href="{{car.car_photo_3.url}}" class="hidden"><img class="hidden" src="{{car.car_photo_3.url}}"></a>{% endif %}
+                                        {% if car.car_photo_4 %}<a href="{{car.car_photo_4.url}}" class="hidden"><img class="hidden" src="{{car.car_photo_4.url}}"></a>{% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="detail">
-                        <h1 class="title">
-                            <a href="{% url 'car_detail' car.id %}">{{car.car_title}}</a>
-                        </h1>
+                        <h1 class="title"><a href="{% url 'car_detail' car.id %}">{{car.car_title}}</a></h1>
                         <div class="location">
-                            <a href="{% url 'car_detail' car.id %}">
-                                <i class="flaticon-pin"></i>{{car.state}}, {{car.city}}
-                            </a>
+                            <a href="{% url 'car_detail' car.id %}"><i class="flaticon-pin"></i>{{car.state}}, {{car.city}}</a>
                         </div>
+                        {% if similarities and car.id in similarities %}
+                        <div class="text-info mt-2">
+                            Similarity Score: {{ similarities.car.id|floatformat:2 }}
+                        </div>
+                        {% endif %}
                     </div>
                     <div class="footer clearfix">
-                        <div class="pull-left ratings days">
-                            <p class="cartype">{{car.body_style}}</p>
-                        </div>
-                        <div class="pull-right">
-                            <p class="price">$ {{car.price | intcomma}}</p>
-                        </div>
+                        <div class="pull-left ratings days"><p class="cartype">{{car.body_style}}</p></div>
+                        <div class="pull-right"><p class="price">$ {{car.price | intcomma}}</p></div>
                     </div>
                 </div>
-				
             </div>
           {% endfor %}
         </div>
+        {% else %}
+        <div class="row">
+          <div class="col-12">
+            <p>No matching cars found. Try a different search or upload.</p>
+          </div>
+        </div>
+        {% endif %}
+
     </div>
 </div>
 <!-- Featured car end -->

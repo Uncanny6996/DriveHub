@@ -13,13 +13,56 @@
             <div class="carousel-item banner-max-height active item-bg">
                 <img class="d-block w-100 h-100" src="{% static 'img/car-6.jpg' %}" alt="banner">
                 <div class="carousel-content container banner-info-2 bi-2 text-left">
-                
                     <h3>Drive Your Own Dreams</h3>
-                    <h5>Allow us to guide you through the innovative stress<br>
-                        free approach in finding your dream car.</h5>
-                    <a href="{% url 'services' %}" class="btn btn-lg btn-theme">Read More</a>
+                    <h5>Allow us to guide you through the innovative stress<br>free approach in finding your dream car.</h5>
+                    <form method="POST" action="{% url 'image_search' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" name="image" accept="image/*" required
+                               style="margin-bottom: 10px; background-color: #fff; padding: 6px; border-radius: 4px;">
+                        <button type="submit" class="btn btn-lg btn-theme">Search by Image</button>
+                    </form>
                 </div>
             </div>
+            <div class="carousel-item banner-max-height item-bg">
+                <img class="d-block w-100 h-100" src="{% static 'img/car-7.jpg' %}" alt="banner">
+                <div class="carousel-content container banner-info-2 bi-2 text-left">
+                    <h3>Fuel for Soul</h3>
+                    <h5>Allow us to guide you through the innovative stress<br>free approach in finding your dream car.</h5>
+                    <form method="POST" action="{% url 'image_search' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" name="image" accept="image/*" required
+                               style="margin-bottom: 10px; background-color: #fff; padding: 6px; border-radius: 4px;">
+                        <button type="submit" class="btn btn-lg btn-theme">Search by Image</button>
+                    </form>
+                </div>
+            </div>
+            <div class="carousel-item banner-max-height item-bg">
+                <img class="d-block w-100 h-100" src="{% static 'img/carslider2.jpg' %}" alt="banner">
+                <div class="carousel-content container banner-info-2 bi-2 text-left">
+                    <h3>Car for Everyone</h3>
+                    <h5>Allow us to guide you through the innovative stress<br>free approach in finding your dream car.</h5>
+                    <form method="POST" action="{% url 'image_search' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" name="image" accept="image/*" required
+                               style="margin-bottom: 10px; background-color: #fff; padding: 6px; border-radius: 4px;">
+                        <button type="submit" class="btn btn-lg btn-theme">Search by Image</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Carousel controls -->
+        <a class="carousel-control-prev none-580" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="slider-mover-left" aria-hidden="true">
+                <i class="fa fa-angle-left"></i>
+            </span>
+        </a>
+        <a class="carousel-control-next none-580" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="slider-mover-right" aria-hidden="true">
+                <i class="fa fa-angle-right"></i>
+            </span>
+        </a>
+    </div>
+</div>
             <div class="carousel-item banner-max-height item-bg">
                 <img class="d-block w-100 h-100" src="{% static 'img/car-7.jpg' %}" alt="banner">
                 <div class="carousel-content container banner-info-2 bi-2 text-left">

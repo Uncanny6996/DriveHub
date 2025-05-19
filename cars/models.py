@@ -2,24 +2,25 @@ from django.db import models
 from datetime import datetime
 from ckeditor.fields import RichTextField
 from multiselectfield import MultiSelectField
+from geopy.geocoders import Nominatim  # Import geocoder
+from django.contrib.auth.models import User
 
-# Create your models here.
+# ------------------------
+# Car Model
+# ------------------------
+
 class Car(models.Model):
-
-    state_choice = (
+    # Choices for various options
+    province_choice = (
         ('KO', 'Koshi'),
         ('MA', 'Madhesh'),
         ('BA', 'Bagmati'),
         ('GA', 'Gandaki'),
-        ('LI', 'Lumbini,'),
+        ('LI', 'Lumbini'),
         ('KA', 'Karnali'),
         ('SU', 'Sudurpaschim'),
-        
     )
-
-    year_choice = []
-    for r in range(2000, (datetime.now().year+1)):
-        year_choice.append((r,r))
+    year_choice = [(r, r) for r in range(2000, datetime.now().year + 1)]  # Ensuring valid years
 
     features_choices = (
         ('Cruise Control', 'Cruise Control'),
@@ -45,12 +46,18 @@ class Car(models.Model):
         ('6', '6'),
     )
 
+    # Fields
     car_title = models.CharField(max_length=255)
-    state = models.CharField(choices=state_choice, max_length=100)
+    place = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100)
+    state = models.CharField(choices=province_choice, max_length=100)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+
+    # Other fields
     color = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
-    year = models.IntegerField(('year'), choices=year_choice)
+    year = models.IntegerField(('year'), choices=year_choice, default=datetime.now().year)  # Default year is set
     condition = models.CharField(max_length=100)
     price = models.IntegerField()
     description = RichTextField()
@@ -71,8 +78,47 @@ class Car(models.Model):
     milage = models.IntegerField()
     fuel_type = models.CharField(max_length=50)
     no_of_owners = models.CharField(max_length=100)
+    stock = models.PositiveIntegerField(default=1)
     is_featured = models.BooleanField(default=False)
     created_date = models.DateTimeField(default=datetime.now, blank=True)
 
     def __str__(self):
         return self.car_title
+
+    def save(self, *args, **kwargs):
+        # Automatically update the latitude and longitude based on place, city, and state
+        if self.place and self.city and self.state:
+            location = self.geocode_location(self.place, self.city, self.state)
+            if location:
+                self.latitude = location['lat']
+                self.longitude = location['lon']
+        super().save(*args, **kwargs)
+
+    def geocode_location(self, place, city, state):
+        # Using Geopy's Nominatim geocoder to get latitude and longitude
+        geolocator = Nominatim(user_agent="car_location_app")
+        location = geolocator.geocode(f"{place}, {city}, {state}, Nepal")
+        if location:
+            return {'lat': location.latitude, 'lon': location.longitude}
+        return {'lat': None, 'lon': None}
+
+
+
+# ------------------------
+# Reservation Model
+# ------------------------
+class Reservation(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Confirmed', 'Confirmed'),
+        ('Cancelled', 'Cancelled'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    booking_method = models.CharField(max_length=100, default='Online')
+    visit_date = models.DateTimeField(default=datetime.now)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reservation for {self.car.car_title} by {self.user.username}"
