@@ -130,7 +130,7 @@ def buy_car(request, id):
             car=car,
             booking_method=request.POST.get('booking_method'),
             visit_date=request.POST.get('visit_date'),
-            delivery_address=request.POST.get('delivery_address')
+            
         )
         return redirect('dashboard')
     return render(request, 'cars/buy_car.html', {'car': car})
@@ -220,6 +220,7 @@ def search(request):
         'transmission_search': transmission_search,
     }
     return render(request, 'cars/search.html', data)
+ 
 
 
-
+ 

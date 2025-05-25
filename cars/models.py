@@ -59,7 +59,7 @@ class Car(models.Model):
     model = models.CharField(max_length=100)
     year = models.IntegerField(('year'), choices=year_choice, default=datetime.now().year)  # Default year is set
     condition = models.CharField(max_length=100)
-    price = models.IntegerField()
+    price = models.IntegerField(null=True, blank=True)
     description = RichTextField()
     car_photo = models.ImageField(upload_to='photos/%Y/%m/%d/')
     car_photo_1 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
@@ -87,11 +87,9 @@ class Car(models.Model):
 
     def save(self, *args, **kwargs):
         # Automatically update the latitude and longitude based on place, city, and state
-        if self.place and self.city and self.state:
-            location = self.geocode_location(self.place, self.city, self.state)
-            if location:
-                self.latitude = location['lat']
-                self.longitude = location['lon']
+        #if self.place and self.city and self.state:
+         ###     self.latitude = location['lat']
+            #    self.longitude = location['lon']
         super().save(*args, **kwargs)
 
     def geocode_location(self, place, city, state):
@@ -118,7 +116,9 @@ class Reservation(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
     booking_method = models.CharField(max_length=100, default='Online')
     visit_date = models.DateTimeField(default=datetime.now)
+    delivery_address = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Reservation for {self.car.car_title} by {self.user.username}"
+

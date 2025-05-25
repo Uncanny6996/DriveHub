@@ -30,3 +30,10 @@ pip install opencv-python
 pip install opencv-python
 pip install inference
 pip install ultralytics opencv-python pillow
+https://codepen.io/creativesite/pen/mjoyvp
+https://naver.github.io/egjs-axes/docs/car360viewer
+pip install jupyter pandas numpy scikit-learn matplotlib joblib xgboost catboost seaborn
+pip install notebook
+pip install missingno
+pip install category_encoders
+pip install xgboost

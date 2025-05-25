@@ -36,8 +36,8 @@
                             <h3><span>$ {{ single_car.price | intcomma }}</span></h3>
                         </div>
                     </div>
+
                     <div id="carDetailsSlider" class="carousel car-details-sliders slide mb-40">
-                        <!-- main slider carousel items -->
                         <div class="carousel-inner">
                             <div class="active item carousel-item" data-slide-number="0">
                                 <img src="{{ single_car.car_photo.url }}" class="img-fluid" alt="slider-car">
@@ -45,25 +45,20 @@
                             {% if single_car.car_photo_1 %}
                             <div class="item carousel-item" data-slide-number="1">
                                 <img src="{{ single_car.car_photo_1.url }}" class="img-fluid" alt="slider-car">
-                            </div>
-                            {% endif %}
+                            </div>{% endif %}
                             {% if single_car.car_photo_2 %}
                             <div class="item carousel-item" data-slide-number="2">
                                 <img src="{{ single_car.car_photo_2.url }}" class="img-fluid" alt="slider-car">
-                            </div>
-                            {% endif %}
+                            </div>{% endif %}
                             {% if single_car.car_photo_3 %}
                             <div class="item carousel-item" data-slide-number="4">
                                 <img src="{{ single_car.car_photo_3.url }}" class="img-fluid" alt="slider-car">
-                            </div>
-                            {% endif %}
+                            </div>{% endif %}
                             {% if single_car.car_photo_4 %}
                             <div class="item carousel-item" data-slide-number="5">
                                 <img src="{{ single_car.car_photo_4.url }}" class="img-fluid" alt="slider-car">
-                            </div>
-                            {% endif %}
+                            </div>{% endif %}
                         </div>
-                        <!-- main slider carousel nav controls -->
                         <div class="carousel-indicators-section clearfix">
                             <ul class="carousel-indicators car-properties list-inline nav nav-justified">
                                 <li class="list-inline-item active">
@@ -76,170 +71,126 @@
                                     <a id="carousel-selector-1" data-slide-to="1" data-target="#carDetailsSlider">
                                         <img src="{{ single_car.car_photo_1.url }}" class="img-fluid" alt="small-car">
                                     </a>
-                                </li>
-                                {% endif %}
+                                </li>{% endif %}
                                 {% if single_car.car_photo_2 %}
                                 <li class="list-inline-item">
                                     <a id="carousel-selector-2" data-slide-to="2" data-target="#carDetailsSlider">
                                         <img src="{{ single_car.car_photo_2.url }}" class="img-fluid" alt="small-car">
                                     </a>
-                                </li>
-                                {% endif %}
+                                </li>{% endif %}
                                 {% if single_car.car_photo_3 %}
                                 <li class="list-inline-item">
                                     <a id="carousel-selector-3" data-slide-to="3" data-target="#carDetailsSlider">
                                         <img src="{{ single_car.car_photo_3.url }}" class="img-fluid" alt="small-car">
                                     </a>
-                                </li>
-                                {% endif %}
+                                </li>{% endif %}
                                 {% if single_car.car_photo_4 %}
                                 <li class="list-inline-item">
                                     <a id="carousel-selector-4" data-slide-to="4" data-target="#carDetailsSlider">
                                         <img src="{{ single_car.car_photo_4.url }}" class="img-fluid" alt="small-car">
                                     </a>
-                                </li>
-                                {% endif %}
+                                </li>{% endif %}
                             </ul>
                         </div>
                     </div>
-
-                    <!-- Tabbing box start -->
+                    <!-- Tabs Section -->
                     <div class="tabbing tabbing-box mb-40">
                         <ul class="nav nav-tabs" id="carTab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active show" id="one-tab" data-toggle="tab" href="#one" role="tab" aria-controls="one" aria-selected="false">Vehicle overview</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="two-tab" data-toggle="tab" href="#two" role="tab" aria-controls="two" aria-selected="false">Features</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="location-tab" data-toggle="tab" href="#location" role="tab" aria-controls="location" aria-selected="false">Location</a>
-                            </li>
+                            <li class="nav-item"><a class="nav-link active show" id="one-tab" data-toggle="tab" href="#one" role="tab">Vehicle overview</a></li>
+                            <li class="nav-item"><a class="nav-link" id="two-tab" data-toggle="tab" href="#two" role="tab">Features</a></li>
+                            <li class="nav-item"><a class="nav-link" id="location-tab" data-toggle="tab" href="#location" role="tab">Location</a></li>
                         </ul>
-
                         <div class="tab-content" id="carTabContent">
-                            <div class="tab-pane fade active show" id="one" role="tabpanel" aria-labelledby="one-tab">
+                            <div class="tab-pane fade active show" id="one" role="tabpanel">
                                 <div class="car-description mb-50">
-                                    <h3 class="heading-2">
-                                        Description
-                                    </h3>
+                                    <h3 class="heading-2">Description</h3>
                                     <p>{{ single_car.description | safe }}</p>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="two" role="tabpanel" aria-labelledby="two-tab">
+                            <div class="tab-pane fade" id="two" role="tabpanel">
                                 <div class="features-info mb-50">
                                     <h3 class="heading-2">Features</h3>
                                     <div class="row">
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <ul>
-                                                <li>{{ single_car.features }}</li>
-                                            </ul>
+                                            <ul><li>{{ single_car.features }}</li></ul>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Location Tab -->
-                            <div class="tab-pane fade" id="location" role="tabpanel" aria-labelledby="location-tab">
+                            <div class="tab-pane fade" id="location" role="tabpanel">
                                 <div class="map-location mb-50">
-                                    <button id="toggleLocation" class="btn btn-primary">Show Location on Map</button>
-                                    <div id="locationPanel" style="display:none;">
-                                        <div id="map" style="height: 400px;"></div>
-                                    </div>
+                                    <button class="btn btn-primary" onclick="openMapPopup({{ single_car.latitude }}, {{ single_car.longitude }})">Show Location on Map</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Fullscreen Map Popup -->
+                    <div id="mapPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:10000; background:white;">
+                        <button onclick="closeMapPopup()" style="position:absolute; top:10px; right:20px; z-index:10001; font-size:24px; background:none; border:none;">&times;</button>
+                        <div id="fullscreenMap" style="width:100%; height:100%;"></div>
+                    </div>
+
                     <!-- Inquiry Modal -->
-<div class="modal fade" id="inquiryModal" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="contact-dealer modal-header">
-        <!-- Updated image source here -->
-        <center><img src="{% static 'img/logos/logo.png' %}" alt="Car Dealer Logo"></center>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="{% url 'inquiry' %}" method="POST">
-          {% csrf_token %}
-
-          {% if user.is_authenticated %}
-            <input type="hidden" name="user_id" value="{{user.id}}">
-          {% else %}
-            <input type="hidden" name="user_id" value="0">
-          {% endif %}
-
-          <input type="hidden" name="car_id" value="{{ single_car.id }}">
-          <div class="form-group">
-            <label for="name" class="col-form-label">Hello, My Name is</label>
-            <div class="row">
-              <div class="col">
-                <input type="text" name="first_name" class="form-control" placeholder="First Name" {% if user.is_authenticated %} value="{{user.first_name}}" {% endif %} required>
-              </div>
-              <div class="col">
-                <input type="text" name="last_name" class="form-control" placeholder="Last Name" {% if user.is_authenticated %} value="{{user.last_name}}" {% endif %} required>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <select class="form-control" id="sel1" name="customer_need">
-              <option value="I'm interested in this">I'm interested in this</option>
-              <option value="I'd like to know your best price for this">I'd like to know your best price for this</option>
-              <option value="I'd like to Schedule a Test Drive">I'd like to Schedule a Test Drive</option>
-              <option value="Check home delivery options">Check home delivery options</option>
-              <option value="I'd like a history report for this">I'd like a history report for this</option>
-              <option value="Discuss Financing">Discuss Financing</option>
-              <option value="Others [Mention Below]">Others [Mention Below]</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <input type="text" name="car_title" class="form-control" value="{{ single_car.car_title }}" readonly>
-          </div>
-
-          <div class="form-group">
-            <label for="name" class="col-form-label">I live in</label>
-            <div class="row">
-              <div class="col">
-                <input type="text" name="city" class="form-control" placeholder="City" required>
-              </div>
-              <div class="col">
-                <input type="text" name="state" class="form-control" placeholder="State" required>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="row">
-              <div class="col">
-                <label for="name" class="col-form-label">You can reach me by email at</label>
-                <input type="email" name="email" class="form-control" placeholder="Email Address" {% if user.is_authenticated %} value="{{user.email}}" {% endif %} required>
-              </div>
-              <div class="col">
-                <label for="phone" class="col-form-label">or by cell at</label>
-                <input type="text" name="phone" placeholder="Phone Number (optional)" class="form-control">
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="message" class="col-form-label">Additional Messages</label>
-            <textarea name="message" class="form-control" placeholder="Enter your message here (optional)"></textarea>
-          </div>
-          <hr>
-          <input type="submit" value="Submit" class="btn btn-block btn-dark">
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
+                    <div class="modal fade" id="inquiryModal" role="dialog">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="contact-dealer modal-header">
+                            <center><img src="{% static 'img/logos/logo.png' %}" alt="Car Dealer Logo"></center>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                          </div>
+                          <div class="modal-body">
+                            <form action="{% url 'inquiry' %}" method="POST">
+                              {% csrf_token %}
+                              <input type="hidden" name="user_id" value="{% if user.is_authenticated %}{{user.id}}{% else %}0{% endif %}">
+                              <input type="hidden" name="car_id" value="{{ single_car.id }}">
+                              <div class="form-group">
+                                <label>Hello, My Name is</label>
+                                <div class="row">
+                                  <div class="col"><input type="text" name="first_name" class="form-control" placeholder="First Name" {% if user.is_authenticated %}value="{{user.first_name}}"{% endif %} required></div>
+                                  <div class="col"><input type="text" name="last_name" class="form-control" placeholder="Last Name" {% if user.is_authenticated %}value="{{user.last_name}}"{% endif %} required></div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <select class="form-control" name="customer_need">
+                                  <option value="I'm interested in this">I'm interested in this</option>
+                                  <option value="I'd like to know your best price for this">Best price</option>
+                                  <option value="I'd like to Schedule a Test Drive">Schedule Test Drive</option>
+                                  <option value="Check home delivery options">Home delivery</option>
+                                  <option value="I'd like a history report for this">History report</option>
+                                  <option value="Discuss Financing">Financing</option>
+                                  <option value="Others [Mention Below]">Others</option>
+                                </select>
+                              </div>
+                              <input type="text" name="car_title" class="form-control" value="{{ single_car.car_title }}" readonly>
+                              <div class="form-group">
+                                <label>I live in</label>
+                                <div class="row">
+                                  <div class="col"><input type="text" name="city" class="form-control" placeholder="City" required></div>
+                                  <div class="col"><input type="text" name="state" class="form-control" placeholder="State" required></div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                  <div class="col"><label>Email</label><input type="email" name="email" class="form-control" placeholder="Email" {% if user.is_authenticated %}value="{{user.email}}"{% endif %} required></div>
+                                  <div class="col"><label>Phone</label><input type="text" name="phone" class="form-control" placeholder="Phone (optional)"></div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label>Additional Messages</label>
+                                <textarea name="message" class="form-control" placeholder="Enter your message here (optional)"></textarea>
+                              </div>
+                              <hr>
+                              <input type="submit" value="Submit" class="btn btn-block btn-dark">
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                 </div>
             </div>
+            <!-- Sidebar and specs -->
             <div class="col-lg-4 col-md-12">
                 <div class="sidebar-right">
                     <div class="widget advanced-search d-none-992">
@@ -249,60 +200,78 @@
                         <br>
                         <h3 class="sidebar-title">Car Specs</h3>
                         <ul>
-                            <li><span><b>Color:</b> </span>{{ single_car.color }}</li>
-                            <li><span><b>Model:</b> </span>{{ single_car.model }}</li>
-                            <li><span><b>Year:</b> </span>{{ single_car.year }}</li>
-                            <li><span><b>Condition:</b> </span>{{ single_car.condition }}</li>
-                            <li><span><b>Body Style:</b> </span>{{ single_car.body_style }}</li>
-                            <li><span><b>Engine:</b> </span>{{ single_car.engine }}</li>
-                            <li><span><b>Transmission:</b> </span>{{ single_car.transmission }}</li>
-                            <li><span><b>Interior:</b> </span>{{ single_car.interior }}</li>
-                            <li><span><b>Miles:</b> </span>{{ single_car.miles | intcomma }} miles</li>
-                            <li><span><b>Doors:</b> </span>{{ single_car.doors }}</li>
-                            <li><span><b>Passengers:</b> </span>{{ single_car.passengers }}</li>
-                            <li><span><b>VIN No.:</b> </span>{{ single_car.vin_no }}</li>
-                            <li><span><b>Mileage:</b> </span>{{ single_car.milage }}</li>
-                            <li><span><b>Fuel Type:</b> </span>{{ single_car.fuel_type }}</li>
-                            <li><span><b>Owners:</b> </span>{{ single_car.no_of_owners }}</li>
-                            <li><span><b>Stock:</b> </span>{{ single_car.stock }}</li>
+                            <li><b>Color:</b> {{ single_car.color }}</li>
+                            <li><b>Model:</b> {{ single_car.model }}</li>
+                            <li><b>Year:</b> {{ single_car.year }}</li>
+                            <li><b>Condition:</b> {{ single_car.condition }}</li>
+                            <li><b>Body Style:</b> {{ single_car.body_style }}</li>
+                            <li><b>Engine:</b> {{ single_car.engine }}</li>
+                            <li><b>Transmission:</b> {{ single_car.transmission }}</li>
+                            <li><b>Interior:</b> {{ single_car.interior }}</li>
+                            <li><b>Miles:</b> {{ single_car.miles | intcomma }}</li>
+                            <li><b>Doors:</b> {{ single_car.doors }}</li>
+                            <li><b>Passengers:</b> {{ single_car.passengers }}</li>
+                            <li><b>VIN No.:</b> {{ single_car.vin_no }}</li>
+                            <li><b>Mileage:</b> {{ single_car.milage }}</li>
+                            <li><b>Fuel Type:</b> {{ single_car.fuel_type }}</li>
+                            <li><b>Owners:</b> {{ single_car.no_of_owners }}</li>
+                            <li><b>Stock:</b> {{ single_car.stock }}</li>
                         </ul>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
 <!-- Car details page end -->
-
-{% endblock %}
-
-{% block extra_js %}
-<!-- Leaflet.js Map -->
+<!-- Leaflet Map Script -->
+<!-- MapTiler + Leaflet Map -->
+<!-- MapTiler + Leaflet Map -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-    // Initialize the map and set view to car's latitude and longitude
-    var map = L.map('map').setView([{{ single_car.latitude }}, {{ single_car.longitude }}], 13);  // Use car latitude and longitude
+  let fullMapInstance = null;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+  function openMapPopup(lat, lng) {
+    const popup = document.getElementById('mapPopup');
+    popup.style.display = 'block';
 
-    L.marker([{{ single_car.latitude }}, {{ single_car.longitude }}]).addTo(map)
-        .bindPopup('Car Location: {{ single_car.place }}, {{ single_car.city }}, {{ single_car.state }}')
+    // Ensure DOM renders before map is initialized
+    setTimeout(() => {
+      if (fullMapInstance) {
+        fullMapInstance.remove();
+      }
+
+      fullMapInstance = L.map('fullscreenMap').setView([lat, lng], 16);
+
+      // Use MapTiler tiles
+      L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ri9hZ3fXldftCzkvp6FV', {
+        attribution: '&copy; <a href="https://www.maptiler.com/">MapTiler</a>',
+        tileSize: 512,
+        zoomOffset: -1
+      }).addTo(fullMapInstance);
+
+      // 📍 Marker
+      L.marker([lat, lng])
+        .addTo(fullMapInstance)
+        .bindPopup("📍 Car Location: {{ single_car.place }}, {{ single_car.city }}, {{ single_car.state }}")
         .openPopup();
 
-    // Initially hide the map
-    var locationPanel = document.getElementById('locationPanel');
-    locationPanel.style.display = 'none';
+      // 🔘 500m blue radius
+      L.circle([lat, lng], {
+        color: 'blue',
+        fillColor: '#3f8efc',
+        fillOpacity: 0.2,
+        radius: 500
+      }).addTo(fullMapInstance);
+    }, 300);
+  }
 
-    // Toggle map visibility
-    document.getElementById('toggleLocation').addEventListener('click', function() {
-        if (locationPanel.style.display === 'none') {
-            locationPanel.style.display = 'block';  // Show the map
-        } else {
-            locationPanel.style.display = 'none';  // Hide the map
-        }
-    });
+  function closeMapPopup() {
+    document.getElementById('mapPopup').style.display = 'none';
+  }
 </script>
+
+
+
+
 {% endblock %}
