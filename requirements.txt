@@ -37,3 +37,6 @@ pip install notebook
 pip install missingno
 pip install category_encoders
 pip install xgboost
+#Username: praphulla 
+#Password: Project@123
+#for admin login

@@ -2,12 +2,9 @@ from django.db import models
 from datetime import datetime
 from ckeditor.fields import RichTextField
 from multiselectfield import MultiSelectField
-from geopy.geocoders import Nominatim  # Import geocoder
+from django.contrib.postgres.fields import ArrayField
+from geopy.geocoders import Nominatim
 from django.contrib.auth.models import User
-
-# ------------------------
-# Car Model
-# ------------------------
 
 class Car(models.Model):
     # Choices for various options
@@ -20,7 +17,7 @@ class Car(models.Model):
         ('KA', 'Karnali'),
         ('SU', 'Sudurpaschim'),
     )
-    year_choice = [(r, r) for r in range(2000, datetime.now().year + 1)]  # Ensuring valid years
+    year_choice = [(r, r) for r in range(2000, datetime.now().year + 1)]
 
     features_choices = (
         ('Cruise Control', 'Cruise Control'),
@@ -46,7 +43,7 @@ class Car(models.Model):
         ('6', '6'),
     )
 
-    # Fields
+    # Core Fields
     car_title = models.CharField(max_length=255)
     place = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100)
@@ -54,10 +51,30 @@ class Car(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
 
-    # Other fields
-    color = models.CharField(max_length=100)
+    # ML Prediction Features
+    make = models.CharField(max_length=100, blank=True)
     model = models.CharField(max_length=100)
-    year = models.IntegerField(('year'), choices=year_choice, default=datetime.now().year)  # Default year is set
+    year = models.IntegerField(choices=year_choice, default=datetime.now().year)
+    engine_fuel_type = models.CharField(max_length=50)
+    engine_hp = models.IntegerField(null=True, blank=True)
+    engine_cylinders = models.IntegerField(null=True, blank=True)
+    transmission_type = models.CharField(max_length=100)
+    driven_wheels = models.CharField(max_length=100, blank=True)
+    number_of_doors = models.CharField(max_length=10, choices=door_choices)
+    market_categories = ArrayField(
+        models.CharField(max_length=50),
+        blank=True,
+        default=list
+    )
+    vehicle_size = models.CharField(max_length=100, blank=True)
+    vehicle_style = models.CharField(max_length=100)
+    highway_mpg = models.IntegerField(null=True, blank=True)
+    city_mpg = models.IntegerField(null=True, blank=True)
+    popularity = models.IntegerField(null=True, blank=True)
+    msrp = models.IntegerField(null=True, blank=True)
+
+    # Display Fields
+    color = models.CharField(max_length=100)
     condition = models.CharField(max_length=100)
     price = models.IntegerField(null=True, blank=True)
     description = RichTextField()
@@ -67,16 +84,8 @@ class Car(models.Model):
     car_photo_3 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
     car_photo_4 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
     features = MultiSelectField(choices=features_choices)
-    body_style = models.CharField(max_length=100)
-    engine = models.CharField(max_length=100)
-    transmission = models.CharField(max_length=100)
-    interior = models.CharField(max_length=100)
-    miles = models.IntegerField()
-    doors = models.CharField(choices=door_choices, max_length=10)
     passengers = models.IntegerField()
     vin_no = models.CharField(max_length=100)
-    milage = models.IntegerField()
-    fuel_type = models.CharField(max_length=50)
     no_of_owners = models.CharField(max_length=100)
     stock = models.PositiveIntegerField(default=1)
     is_featured = models.BooleanField(default=False)
@@ -86,25 +95,16 @@ class Car(models.Model):
         return self.car_title
 
     def save(self, *args, **kwargs):
-        # Automatically update the latitude and longitude based on place, city, and state
-        #if self.place and self.city and self.state:
-         ###     self.latitude = location['lat']
-            #    self.longitude = location['lon']
+        # Geocoding logic remains the same
         super().save(*args, **kwargs)
 
     def geocode_location(self, place, city, state):
-        # Using Geopy's Nominatim geocoder to get latitude and longitude
         geolocator = Nominatim(user_agent="car_location_app")
         location = geolocator.geocode(f"{place}, {city}, {state}, Nepal")
         if location:
             return {'lat': location.latitude, 'lon': location.longitude}
         return {'lat': None, 'lon': None}
 
-
-
-# ------------------------
-# Reservation Model
-# ------------------------
 class Reservation(models.Model):
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
@@ -121,4 +121,3 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"Reservation for {self.car.car_title} by {self.user.username}"
-

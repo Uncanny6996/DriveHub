@@ -11,8 +11,6 @@ import torch.nn.functional as F
 import cv2
 import numpy as np
 
-# 🎨 Enhanced color name detection
-
 def closest_color_name(rgb):
     r, g, b = rgb
     brightness = (r + g + b) / 3
@@ -42,14 +40,13 @@ def closest_color_name(rgb):
 
     return min(known_colors, key=lambda name: distance(rgb, known_colors[name]))
 
-
 def get_dominant_color(image_path):
     img = cv2.imread(image_path)
     img = cv2.resize(img, (100, 100))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     pixels = img.reshape((-1, 3))
-    mask = np.all(pixels < [240, 240, 240], axis=1)  # Remove near-white
+    mask = np.all(pixels < [240, 240, 240], axis=1)
     filtered = pixels[mask] if np.any(mask) else pixels
 
     Z = np.float32(filtered)
@@ -59,7 +56,6 @@ def get_dominant_color(image_path):
     counts = np.bincount(labels.flatten())
     dominant_rgb = centers[np.argmax(counts)].astype(int)
     return closest_color_name(tuple(dominant_rgb))
-
 
 @login_required
 def image_search(request):
@@ -119,8 +115,6 @@ def image_search(request):
 
     return redirect('cars')
 
-
-# 🛍️ Reserve a car
 @login_required
 def buy_car(request, id):
     car = get_object_or_404(Car, pk=id)
@@ -130,21 +124,21 @@ def buy_car(request, id):
             car=car,
             booking_method=request.POST.get('booking_method'),
             visit_date=request.POST.get('visit_date'),
-            
         )
         return redirect('dashboard')
     return render(request, 'cars/buy_car.html', {'car': car})
 
-# ❌ Cancel a reservation
 @login_required
 def cancel_reservation(request, id):
     reservation = get_object_or_404(Reservation, pk=id, user=request.user)
     reservation.delete()
     return redirect('dashboard')
 
-# 🛍️ Show available cars
 def cars(request):
     cars = Car.objects.filter(stock__gt=0).order_by('-created_date')
+    featured_cars = Car.objects.filter(stock__gt=0, is_featured=True).order_by('-created_date')[:6]
+    all_cars = Car.objects.filter(stock__gt=0).order_by('-created_date')
+    
     paginator = Paginator(cars, 4)
     page = request.GET.get('page')
     paged_cars = paginator.get_page(page)
@@ -152,33 +146,33 @@ def cars(request):
     model_search = Car.objects.values_list('model', flat=True).distinct()
     city_search = Car.objects.values_list('city', flat=True).distinct()
     year_search = Car.objects.values_list('year', flat=True).distinct()
-    body_style_search = Car.objects.values_list('body_style', flat=True).distinct()
+    vehicle_style_search = Car.objects.values_list('vehicle_style', flat=True).distinct()
 
     data = {
         'cars': paged_cars,
+        'featured_cars': featured_cars,
+        'all_cars': all_cars,
         'model_search': model_search,
         'city_search': city_search,
         'year_search': year_search,
-        'body_style_search': body_style_search,
+        'vehicle_style_search': vehicle_style_search,
     }
     return render(request, 'cars/cars.html', data)
 
-# 📄 Car detail
 def car_detail(request, id):
     single_car = get_object_or_404(Car, pk=id)
     if single_car.stock <= 0:
         return redirect('cars')
     return render(request, 'cars/car_detail.html', {'single_car': single_car})
 
-# 🔎 Search with filters
 def search(request):
     cars = Car.objects.filter(stock__gt=0).order_by('-created_date')
 
     model_search = Car.objects.values_list('model', flat=True).distinct()
     city_search = Car.objects.values_list('city', flat=True).distinct()
     year_search = Car.objects.values_list('year', flat=True).distinct()
-    body_style_search = Car.objects.values_list('body_style', flat=True).distinct()
-    transmission_search = Car.objects.values_list('transmission', flat=True).distinct()
+    vehicle_style_search = Car.objects.values_list('vehicle_style', flat=True).distinct()
+    transmission_search = Car.objects.values_list('transmission_type', flat=True).distinct()
 
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
@@ -200,10 +194,10 @@ def search(request):
         if year:
             cars = cars.filter(year__iexact=year)
 
-    if 'body_style' in request.GET:
-        body_style = request.GET['body_style']
-        if body_style:
-            cars = cars.filter(body_style__iexact=body_style)
+    if 'vehicle_style' in request.GET:
+        vehicle_style = request.GET['vehicle_style']
+        if vehicle_style:
+            cars = cars.filter(vehicle_style__iexact=vehicle_style)
 
     if 'min_price' in request.GET:
         min_price = request.GET['min_price']
@@ -216,11 +210,65 @@ def search(request):
         'model_search': model_search,
         'city_search': city_search,
         'year_search': year_search,
-        'body_style_search': body_style_search,
+        'vehicle_style_search': vehicle_style_search,
         'transmission_search': transmission_search,
     }
     return render(request, 'cars/search.html', data)
- 
 
+def export_car_data_for_ml(filepath='car_data_ml.csv'):
+    """
+    Exports car data in ML-ready format without affecting any views
+    Usage: Call this from Django shell when you need to export data for ML training
+    """
+    import pandas as pd
+    from django.db.models import F
+    
+    # Get all cars with ML-relevant fields
+    queryset = Car.objects.annotate(
+        actual_price=F('price'),
+        suggested_price=F('msrp')
+    ).values(
+        'make',
+        'model',
+        'year',
+        'engine_fuel_type',
+        'engine_hp',
+        'engine_cylinders',
+        'transmission_type',
+        'driven_wheels',
+        'vehicle_size',
+        'vehicle_style',
+        'highway_mpg',
+        'city_mpg',
+        'popularity',
+        'suggested_price',
+        'actual_price'
+    )
+    
+    df = pd.DataFrame.from_records(queryset)
+    df.to_csv(filepath, index=False)
+    return f"Data exported to {filepath}"
 
- 
+def get_ml_features_dict(car_id):
+    """
+    Helper function to get ML features for a single car
+    """
+    car = Car.objects.filter(id=car_id).values(
+        'make',
+        'model',
+        'year',
+        'engine_fuel_type',
+        'engine_hp',
+        'engine_cylinders',
+        'transmission_type',
+        'driven_wheels',
+        'vehicle_size',
+        'vehicle_style',
+        'highway_mpg',
+        'city_mpg',
+        'popularity',
+        'msrp',
+        'price'
+    ).first()
+    
+    return car if car else None
