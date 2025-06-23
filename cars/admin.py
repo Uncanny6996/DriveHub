@@ -91,17 +91,16 @@ class CarAdmin(admin.ModelAdmin):
         if hasattr(obj, 'market_category') and isinstance(obj.market_category, str):
             obj.market_categories = [x.strip() for x in obj.market_category.split(',')]
         
-        # Price prediction logic
+        # Price prediction logic using the new pipeline
         price_before = obj.price
         if not price_before or price_before in [None, 0, '']:
             try:
-                model_path = os.path.join(settings.BASE_DIR, 'ml', 'car_price_model.pkl')
-                encoder_path = os.path.join(settings.BASE_DIR, 'ml', 'car_encoder.pkl')
+                pipeline_path = os.path.join(settings.BASE_DIR, 'ml', 'car_price_pipeline.pkl')
+                
+                if os.path.exists(pipeline_path):
+                    pipeline = joblib.load(pipeline_path)
 
-                if os.path.exists(model_path) and os.path.exists(encoder_path):
-                    model = joblib.load(model_path)
-                    encoder = joblib.load(encoder_path)
-
+                    # Prepare input data matching the pipeline's expected format
                     input_data = {
                         'Engine Fuel Type': obj.engine_fuel_type,
                         'Transmission Type': obj.transmission_type,
@@ -112,19 +111,23 @@ class CarAdmin(admin.ModelAdmin):
                         'Engine HP': float(obj.engine_hp) if obj.engine_hp else 0,
                         'Engine Cylinders': float(obj.engine_cylinders) if obj.engine_cylinders else 0,
                         'city mpg': obj.city_mpg or 0,
-                        'highway MPG': obj.highway_mpg or 0
+                        'highway MPG': obj.highway_mpg or 0  # Note: Must match exactly ('MPG' vs 'mpg')
                     }
 
+                    # Convert to DataFrame (ensure column order matches training)
                     df = pd.DataFrame([input_data])
-                    df_encoded = encoder.transform(df)
-                    log_price = model.predict(df_encoded)
-                    predicted_price = int(np.expm1(log_price)[0])
+                    
+                    # Predict (pipeline handles all preprocessing)
+                    log_price = pipeline.predict(df)
+                    predicted_price = int(np.expm1(log_price[0]))  # Convert from log scale
                     obj.price = predicted_price
-                    print(f"[✅ ML] Predicted price set to: {predicted_price}")
+                    print(f"[✅ ML] Predicted price set to: ${predicted_price:,}")
+                else:
+                    print("[⚠️ ML WARNING] Pipeline not found at:", pipeline_path)
             except Exception as e:
-                print(f"[❌ ML ERROR] Could not predict price: {e}")
+                print(f"[❌ ML ERROR] Could not predict price: {str(e)}")
         else:
-            print(f"[ℹ️ SKIPPED ML] Price manually set: {price_before}")
+            print(f"[ℹ️ SKIPPED ML] Price manually set: ${price_before:,}")
 
         # Save the model first
         super().save_model(request, obj, form, change)
@@ -139,4 +142,4 @@ class CarAdmin(admin.ModelAdmin):
                     blur_plate_with_haar(image_path)
                     print(f"[✅ BLUR DONE] {field}")
                 except Exception as e:
-                    print(f"[❌ BLUR ERROR] {field}: {e}")
+                    print(f"[❌ BLUR ERROR] {field}: {str(e)}")

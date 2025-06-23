@@ -40,3 +40,4 @@ pip install xgboost
 #Username: praphulla 
 #Password: Project@123
 #for admin login
+pip install --upgrade setuptools
