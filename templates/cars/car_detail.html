@@ -39,6 +39,7 @@
                     </div>
 
                     <div id="carDetailsSlider" class="carousel car-details-sliders slide mb-40">
+                        <!-- Main slider -->
                         <div class="carousel-inner">
                             <div class="active item carousel-item" data-slide-number="0">
                                 <img src="{{ single_car.car_photo.url }}" class="img-fluid" alt="slider-car">
@@ -60,6 +61,7 @@
                                 <img src="{{ single_car.car_photo_4.url }}" class="img-fluid" alt="slider-car">
                             </div>{% endif %}
                         </div>
+                        <!-- Thumbnail slider -->
                         <div class="carousel-indicators-section clearfix">
                             <ul class="carousel-indicators car-properties list-inline nav nav-justified">
                                 <li class="list-inline-item active">
@@ -127,7 +129,7 @@
                         </div>
                     </div>
 
-                    <!-- Inquiry Modal for Sending a Message -->
+                    <!-- Inquiry Modal -->
                     <div class="modal fade" id="inquiryModal" role="dialog">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -136,19 +138,29 @@
                                     <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{% url 'inquiry' %}" method="POST">
+                                    <form id="inquiryForm" action="{% url 'contacts:inquiry' %}" method="POST">
                                         {% csrf_token %}
                                         <input type="hidden" name="user_id" value="{% if user.is_authenticated %}{{user.id}}{% else %}0{% endif %}">
                                         <input type="hidden" name="car_id" value="{{ single_car.id }}">
+                                        <input type="hidden" name="car_title" value="{{ single_car.car_title }}">
+                                        
                                         <div class="form-group">
                                             <label>Hello, My Name is</label>
                                             <div class="row">
-                                                <div class="col"><input type="text" name="first_name" class="form-control" placeholder="First Name" {% if user.is_authenticated %}value="{{user.first_name}}"{% endif %} required></div>
-                                                <div class="col"><input type="text" name="last_name" class="form-control" placeholder="Last Name" {% if user.is_authenticated %}value="{{user.last_name}}"{% endif %} required></div>
+                                                <div class="col">
+                                                    <input type="text" name="first_name" class="form-control" placeholder="First Name" 
+                                                           {% if user.is_authenticated %}value="{{user.first_name}}"{% endif %} required>
+                                                </div>
+                                                <div class="col">
+                                                    <input type="text" name="last_name" class="form-control" placeholder="Last Name" 
+                                                           {% if user.is_authenticated %}value="{{user.last_name}}"{% endif %} required>
+                                                </div>
                                             </div>
                                         </div>
+                                        
                                         <div class="form-group">
-                                            <select class="form-control" name="customer_need">
+                                            <select class="form-control" name="customer_need" required>
+                                                <option value="" disabled selected>Select your inquiry type</option>
                                                 <option value="I'm interested in this">I'm interested in this</option>
                                                 <option value="I'd like to know your best price for this">Best price</option>
                                                 <option value="I'd like to Schedule a Test Drive">Schedule Test Drive</option>
@@ -158,32 +170,51 @@
                                                 <option value="Others [Mention Below]">Others</option>
                                             </select>
                                         </div>
-                                        <input type="text" name="car_title" class="form-control" value="{{ single_car.car_title }}" readonly>
+                                        
                                         <div class="form-group">
                                             <label>I live in</label>
                                             <div class="row">
-                                                <div class="col"><input type="text" name="city" class="form-control" placeholder="City" required></div>
-                                                <div class="col"><input type="text" name="state" class="form-control" placeholder="State" required></div>
+                                                <div class="col">
+                                                    <input type="text" name="city" class="form-control" placeholder="City" required>
+                                                </div>
+                                                <div class="col">
+                                                    <input type="text" name="state" class="form-control" placeholder="State" required>
+                                                </div>
                                             </div>
                                         </div>
+                                        
                                         <div class="form-group">
                                             <div class="row">
-                                                <div class="col"><label>Email</label><input type="email" name="email" class="form-control" placeholder="Email" {% if user.is_authenticated %}value="{{user.email}}"{% endif %} required></div>
-                                                <div class="col"><label>Phone</label><input type="text" name="phone" class="form-control" placeholder="Phone (optional)"></div>
+                                                <div class="col">
+                                                    <label>Email</label>
+                                                    <input type="email" name="email" class="form-control" placeholder="Email" 
+                                                           {% if user.is_authenticated %}value="{{user.email}}"{% endif %} required>
+                                                </div>
+                                                <div class="col">
+                                                    <label>Phone</label>
+                                                    <input type="text" name="phone" class="form-control" placeholder="Phone (optional)">
+                                                </div>
                                             </div>
                                         </div>
+                                        
                                         <div class="form-group">
-                                            <label>Additional Messages</label>
-                                            <textarea name="message" class="form-control" placeholder="Enter your message here (optional)"></textarea>
+                                            <label>Your Message</label>
+                                            <textarea name="message" class="form-control" placeholder="Enter your message here" rows="3"></textarea>
                                         </div>
+                                        
                                         <hr>
-                                        <input type="submit" value="Submit" class="btn btn-block btn-dark">
+                                        <button type="submit" class="btn btn-block btn-dark">
+                                            {% if user.is_authenticated %}
+                                                Submit Inquiry
+                                            {% else %}
+                                                Login to Submit Inquiry
+                                            {% endif %}
+                                        </button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -191,10 +222,22 @@
             <div class="col-lg-4 col-md-12">
                 <div class="sidebar-right">
                     <div class="widget advanced-search d-none-992">
-                        <button class="btn btn-danger bomd btn-block btn-lg" data-toggle="modal" data-target="#inquiryModal">Send a Message</button>
+                        <!-- Inquiry Button with Login Check -->
+                        {% if user.is_authenticated %}
+                            <button class="btn btn-danger btn-block btn-lg" data-toggle="modal" data-target="#inquiryModal">
+                                Send Inquiry
+                            </button>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={% url 'cars:car_detail' single_car.id %}" class="btn btn-danger btn-block btn-lg">
+                                Login to Inquire
+                            </a>
+                        {% endif %}
+                        
                         <br>
-                        <a href="{% url 'buy_car' single_car.id %}" class="btn btn-success btn-block btn-lg">BUY CAR</a>
+                        <a href="{% url 'cars:buy_car' single_car.id %}" class="btn btn-success btn-block btn-lg">BUY CAR</a>
                         <br>
+                        
+                        <!-- Car Specs -->
                         <h3 class="sidebar-title">Car Specs</h3>
                         <ul>
                             <li><b>Color:</b> {{ single_car.color }}</li>
@@ -218,6 +261,53 @@
         </div>
     </div>
 </div>
-<!-- Car details page end -->
+
+<!-- Map Script -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  let fullMapInstance = null;
+
+  function openMapPopup(lat, lng) {
+    const popup = document.getElementById('mapPopup');
+    popup.style.display = 'block';
+
+    setTimeout(() => {
+      if (fullMapInstance) {
+        fullMapInstance.remove();
+      }
+
+      fullMapInstance = L.map('fullscreenMap').setView([lat, lng], 16);
+      L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ri9hZ3fXldftCzkvp6FV', {
+        attribution: '&copy; <a href="https://www.maptiler.com/">MapTiler</a>',
+        tileSize: 512,
+        zoomOffset: -1
+      }).addTo(fullMapInstance);
+
+      L.marker([lat, lng])
+        .addTo(fullMapInstance)
+        .bindPopup("📍 Car Location: {{ single_car.place }}, {{ single_car.city }}, {{ single_car.state }}")
+        .openPopup();
+
+      L.circle([lat, lng], {
+        color: 'blue',
+        fillColor: '#3f8efc',
+        fillOpacity: 0.2,
+        radius: 500
+      }).addTo(fullMapInstance);
+    }, 300);
+  }
+
+  function closeMapPopup() {
+    document.getElementById('mapPopup').style.display = 'none';
+  }
+
+  // Inquiry form handling
+  document.getElementById('inquiryForm').addEventListener('submit', function(e) {
+      if (!{% if user.is_authenticated %}true{% else %}false{% endif %}) {
+          e.preventDefault();
+          window.location.href = "{% url 'login' %}?next={% url 'cars:car_detail' single_car.id %}";
+      }
+  });
+</script>
 
 {% endblock %}

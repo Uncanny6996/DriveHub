@@ -15,7 +15,7 @@
                 <div class="carousel-content container banner-info-2 bi-2 text-left">
                     <h3>Drive Your Own Dreams</h3>
                     <h5>Allow us to guide you through the innovative stress<br>free approach in finding your dream car.</h5>
-                    <form method="POST" action="{% url 'image_search' %}" enctype="multipart/form-data">
+                    <form method="POST" action="{% url 'cars:image_search' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="file" name="image" accept="image/*" required
                                style="margin-bottom: 10px; background-color: #fff; padding: 6px; border-radius: 4px;">
@@ -28,7 +28,7 @@
                 <div class="carousel-content container banner-info-2 bi-2 text-left">
                     <h3>Fuel for Soul</h3>
                     <h5>Allow us to guide you through the innovative stress<br>free approach in finding your dream car.</h5>
-                    <form method="POST" action="{% url 'image_search' %}" enctype="multipart/form-data">
+                    <form method="POST" action="{% url 'cars:image_search' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="file" name="image" accept="image/*" required
                                style="margin-bottom: 10px; background-color: #fff; padding: 6px; border-radius: 4px;">
@@ -41,7 +41,7 @@
                 <div class="carousel-content container banner-info-2 bi-2 text-left">
                     <h3>Car for Everyone</h3>
                     <h5>Allow us to guide you through the innovative stress<br>free approach in finding your dream car.</h5>
-                    <form method="POST" action="{% url 'image_search' %}" enctype="multipart/form-data">
+                    <form method="POST" action="{% url 'cars:image_search' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="file" name="image" accept="image/*" required
                                style="margin-bottom: 10px; background-color: #fff; padding: 6px; border-radius: 4px;">
@@ -79,7 +79,7 @@
                 <div class="slick-slide-item">
                     <div class="car-box-3">
                         <div class="car-thumbnail">
-                            <a href="{% url 'car_detail' car.id %}" class="car-img">
+                            <a href="{% url 'cars:car_detail' car.id %}" class="car-img">
                                 <div class="tag-2">Featured</div>
                                 <div class="price-box">
                                     <span>${{car.price|intcomma|default:"Call for price"}}</span>
@@ -98,10 +98,10 @@
                         </div>
                         <div class="detail">
                             <h1 class="title">
-                                <a href="{% url 'car_detail' car.id %}">{{ car.car_title }}</a>
+                                <a href="{% url 'cars:car_detail' car.id %}">{{ car.car_title }}</a>
                             </h1>
                             <div class="location">
-                                <a href="{% url 'car_detail' car.id %}">
+                                <a href="{% url 'cars:car_detail' car.id %}">
                                     <i class="flaticon-pin"></i>{{car.state}}, {{car.city}}
                                 </a>
                             </div>
@@ -117,7 +117,7 @@
 
 <!-- Search box 3 start -->
 <div class="search-box-4 sb-8">
-    <form action="{% url 'search' %}" method="get">
+    <form action="{% url 'cars:search' %}" method="get">
         <div class="form-group">
             <input type="text" name="keyword" placeholder="Search by Car Name" class="form-control">
         </div>
@@ -182,7 +182,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="car-box">
                     <div class="car-thumbnail">
-                        <a href="{% url 'car_detail' car.id %}" class="car-img">
+                        <a href="{% url 'cars:car_detail' car.id %}" class="car-img">
                             <div class="tag">For Sale</div>
                             <img class="d-block w-100" src="{{car.car_photo.url}}" alt="car" style="min-height: 262px; max-height: 262px;">
                             <div class="facilities-list clearfix">
@@ -235,10 +235,10 @@
                     </div>
                     <div class="detail">
                         <h1 class="title">
-                            <a href="{% url 'car_detail' car.id %}">{{car.car_title}}</a>
+                            <a href="{% url 'cars:car_detail' car.id %}">{{car.car_title}}</a>
                         </h1>
                         <div class="location">
-                            <a href="{% url 'car_detail' car.id %}">
+                            <a href="{% url 'cars:car_detail' car.id %}">
                                 <i class="flaticon-pin"></i>{{car.state}}, {{car.city}}
                             </a>
                         </div>

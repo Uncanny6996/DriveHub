@@ -22,7 +22,7 @@
     <div class="container">
         <div class="search-area-inner">
             <div class="search-contents">
-                <form method="GET" action="{% url 'search' %}">
+                <form method="GET" action="{% url 'cars:search' %}">
                     <div class="row">
                         <div class="col-lg-3 col-md-6 col-sm-6 col-6">
                             <div class="form-group">
@@ -118,7 +118,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="car-box">
                     <div class="car-thumbnail">
-                        <a href="{% url 'car_detail' car.id %}" class="car-img">
+                        <a href="{% url 'cars:car_detail' car.id %}" class="car-img">
                             <div class="tag">For Sale</div>
                             <img class="d-block w-100" src="{{car.car_photo.url}}" alt="car" style="min-height: 262px; max-height: 262px;">
                             <div class="facilities-list clearfix">
@@ -147,9 +147,9 @@
                         </div>
                     </div>
                     <div class="detail">
-                        <h1 class="title"><a href="{% url 'car_detail' car.id %}">{{car.car_title}}</a></h1>
+                        <h1 class="title"><a href="{% url 'cars:car_detail' car.id %}">{{car.car_title}}</a></h1>
                         <div class="location">
-                            <a href="{% url 'car_detail' car.id %}"><i class="flaticon-pin"></i>{{car.state}}, {{car.city}}</a>
+                            <a href="{% url 'cars:car_detail' car.id %}"><i class="flaticon-pin"></i>{{car.state}}, {{car.city}}</a>
                         </div>
                         {% if similarities and car.id in similarities %}
                         <div class="text-info mt-2">

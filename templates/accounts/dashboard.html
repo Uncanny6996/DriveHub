@@ -9,40 +9,130 @@
   <h2>Welcome, {{ user.first_name }}</h2>
 
   <!-- Inquired Cars Table -->
-  <h4 class="mt-4">Here are the list of the cars that you have inquired about:</h4>
-  <table class="table table-bordered">
-    <thead class="thead-dark">
-      <tr>
-        <th>#</th>
-        <th>Car Name</th>
-        <th>Location</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for inquiry in inquiries %}
-      <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ inquiry.car_title }}</td>
-        <td>{{ inquiry.city }}</td>
-        <td><a href="{% url 'car_detail' inquiry.car_id %}" class="btn btn-dark btn-sm">View Car</a></td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4">You have not inquired about any cars.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <h4 class="mt-4">Your Car Inquiries</h4>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>#</th>
+          <th>Car Name</th>
+          <th>Your Message</th>
+          <th>Admin Reply</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inquiry in inquiries %}
+        <tr class="{% if inquiry.is_resolved %}table-success{% elif inquiry.admin_reply %}table-info{% endif %}">
+          <td>{{ forloop.counter }}</td>
+          <td>{{ inquiry.car_title }}</td>
+          <td>
+            {{ inquiry.message|truncatechars:50 }}
+            {% if inquiry.message|length > 50 %}
+              <a href="#" data-toggle="modal" data-target="#messageModal{{ inquiry.id }}">Read more</a>
+            {% endif %}
+          </td>
+          <td>
+            {% if inquiry.admin_reply %}
+              {{ inquiry.admin_reply|truncatechars:50 }}
+              {% if inquiry.admin_reply|length > 50 %}
+                <a href="#" data-toggle="modal" data-target="#replyModal{{ inquiry.id }}">Read more</a>
+              {% endif %}
+              <small class="text-muted d-block">
+                Replied on: {{ inquiry.reply_date|date:"M d, Y" }}
+              </small>
+            {% else %}
+              <span class="text-warning">Waiting for reply</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if inquiry.is_resolved %}
+              <span class="badge badge-success">Resolved</span>
+            {% else %}
+              <span class="badge badge-warning">Pending</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="btn-group" role="group">
+              <a href="{% url 'cars:car_detail' id=inquiry.car_id %}" class="btn btn-sm btn-primary" title="View Car">
+                <i class="fas fa-eye"></i>
+              </a>
+              <form method="POST" action="{% url 'contacts:delete_inquiry' inquiry.id %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger" title="Delete Inquiry" onclick="return confirm('Are you sure you want to delete this inquiry?')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
 
-  <!-- Reserved Cars Box Below -->
+        <!-- Message Modal -->
+        <div class="modal fade" id="messageModal{{ inquiry.id }}" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Your Inquiry</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Car:</strong> {{ inquiry.car_title }}</p>
+                <p><strong>Date:</strong> {{ inquiry.create_date|date:"M d, Y" }}</p>
+                <hr>
+                <p>{{ inquiry.message }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reply Modal -->
+        {% if inquiry.admin_reply %}
+        <div class="modal fade" id="replyModal{{ inquiry.id }}" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Admin Reply</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Car:</strong> {{ inquiry.car_title }}</p>
+                <p><strong>Reply Date:</strong> {{ inquiry.reply_date|date:"M d, Y" }}</p>
+                <hr>
+                <p>{{ inquiry.admin_reply }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center">You have not made any inquiries yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Reserved Cars Section -->
   <h4 class="mt-5">Your Reserved Cars:</h4>
   {% for res in reservations %}
     <div class="card p-3 mb-3">
       <h5 class="mb-1">{{ res.car.car_title }}</h5>
       <p class="mb-1">Visit Date: {{ res.visit_date|date:"F d, Y" }}</p>
       <p class="mb-2">Booking Method: {{ res.booking_method }}</p>
-      <form method="post" action="{% url 'cancel_reservation' res.id %}" style="display: inline;">
+      <form method="post" action="{% url 'cars:cancel_reservation' res.id %}" style="display: inline;">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger btn-sm">Cancel Reservation</button>
       </form>
@@ -51,4 +141,27 @@
     <p>No reserved cars.</p>
   {% endfor %}
 </div>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  .badge {
+    font-size: 0.85em;
+    font-weight: 500;
+  }
+  .btn-group .btn {
+    margin-right: 5px;
+  }
+  .table-success {
+    background-color: #d4edda;
+  }
+  .table-info {
+    background-color: #d1ecf1;
+  }
+</style>
+
 {% endblock %}
